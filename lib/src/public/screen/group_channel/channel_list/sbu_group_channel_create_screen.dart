@@ -19,11 +19,11 @@ import 'package:sendbird_uikit/src/internal/resource/sbu_text_styles.dart';
 /// SBUGroupChannelCreateScreen
 class SBUGroupChannelCreateScreen extends SBUStatefulComponent {
   final void Function(GroupChannel)? onChannelCreated;
-  final GroupChannelCreateParams? params;
+  final String? customType;
 
   const SBUGroupChannelCreateScreen({
     this.onChannelCreated,
-    this.params,
+    this.customType,
     super.key,
   });
 
@@ -114,13 +114,12 @@ class SBUGroupChannelCreateScreenState
             ? () async {
                 if (SendbirdChat.currentUser != null) {
                   GroupChannel.createChannel(
-                    widget.params != null
-                        ? widget.params
-                        : (GroupChannelCreateParams()
+                    GroupChannelCreateParams()
                           ..userIds = selectedUserIdList
                           ..operatorUserIds = [SendbirdChat.currentUser!.userId]
                           ..name = ''
-                          ..isDistinct = false),
+                          ..isDistinct = false
+                          ..customType = widget.customType,
                   ).then((channel) {
                     Navigator.pop(context);
                     if (widget.onChannelCreated != null) {
