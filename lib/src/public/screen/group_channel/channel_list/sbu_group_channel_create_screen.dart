@@ -44,7 +44,9 @@ class SBUGroupChannelCreateScreenState
   void initState() {
     super.initState();
 
-    query = ApplicationUserListQuery();
+    query = ApplicationUserListQuery(
+      userIdsFilter: ['${widget.customType}_']
+    );
     _next();
   }
 
