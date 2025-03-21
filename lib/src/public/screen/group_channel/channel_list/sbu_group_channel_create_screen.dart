@@ -44,9 +44,7 @@ class SBUGroupChannelCreateScreenState
   void initState() {
     super.initState();
 
-    query = ApplicationUserListQuery(
-      userIdsFilter: ['${widget.customType}_']
-    );
+    query = ApplicationUserListQuery();
     _next();
   }
 
@@ -58,7 +56,9 @@ class SBUGroupChannelCreateScreenState
             for (final user in users) {
               if (user.userId != SendbirdChat.currentUser!.userId) {
                 isLoading = false;
-                userList.add(user);
+                if(user.userId.startsWith('${widget.customType}_')){
+                  userList.add(user);
+                }
               }
             }
           });
