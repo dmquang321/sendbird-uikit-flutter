@@ -17,6 +17,10 @@ import 'package:sendbird_uikit/src/internal/provider/sbu_group_channel_collectio
 import 'package:sendbird_uikit/src/internal/resource/sbu_text_styles.dart';
 import 'package:sendbird_uikit/src/internal/utils/sbu_reaction_manager.dart';
 
+class QueryController extends ValueNotifier<GroupChannelListQuery?> {
+  QueryController({GroupChannelListQuery? query}) : super(query);
+}
+
 /// SBUGroupChannelListScreen
 class SBUGroupChannelListScreen extends SBUStatefulComponent {
   static const double defaultScrollExtentToTriggerPreloading = 2000; // Check
@@ -29,6 +33,7 @@ class SBUGroupChannelListScreen extends SBUStatefulComponent {
   final void Function(GroupChannel)? onListItemClicked;
   final double scrollExtentToTriggerPreloading;
   final double cacheExtent;
+  final QueryController? queryController;
 
   final Widget Function(
     BuildContext context,
@@ -80,6 +85,7 @@ class SBUGroupChannelListScreen extends SBUStatefulComponent {
     this.customLoadingBody,
     this.customEmptyBody,
     this.customErrorScreen,
+    this.queryController,
     super.key,
   });
 
@@ -90,6 +96,7 @@ class SBUGroupChannelListScreen extends SBUStatefulComponent {
 class SBUGroupChannelListScreenState extends State<SBUGroupChannelListScreen>
     with AutomaticKeepAliveClientMixin {
   final scrollController = ScrollController();
+  late QueryController queryController;
 
   late int collectionNo;
   bool isLoading = true;
@@ -102,6 +109,9 @@ class SBUGroupChannelListScreenState extends State<SBUGroupChannelListScreen>
   void initState() {
     super.initState();
     FToast().init(context); // Check
+    queryController =
+        widget.queryController ?? QueryController(query: widget.query);
+    queryController.addListener(_onChangeValue);
     _init();
   }
 
@@ -114,6 +124,14 @@ class SBUGroupChannelListScreenState extends State<SBUGroupChannelListScreen>
     }
 
     _loadMore();
+  }
+
+  void _onChangeValue() {
+    if (mounted) {
+      setState(() {
+        _init();
+      });
+    }
   }
 
   Future<void> _loadMore() async {
@@ -170,10 +188,26 @@ class SBUGroupChannelListScreenState extends State<SBUGroupChannelListScreen>
     }
   }
 
+   @override
+  void didUpdateWidget(covariant SBUGroupChannelListScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.queryController != oldWidget.queryController) {
+      queryController.removeListener(_onChangeValue);
+      queryController = widget.queryController ??
+          QueryController(query: widget.query);
+      queryController.addListener(_onChangeValue);
+    }
+  }
+
   @override
   void dispose() {
     SBUGroupChannelCollectionProvider().remove(collectionNo);
     scrollController.dispose();
+    queryController.removeListener(_onChangeValue);
+    if (widget.queryController == null) {
+      queryController.dispose();
+    }
     super.dispose();
   }
 
