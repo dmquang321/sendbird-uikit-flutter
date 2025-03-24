@@ -105,6 +105,15 @@ class SBUGroupChannelListScreenState extends State<SBUGroupChannelListScreen>
     _init();
   }
 
+  @override
+  void didUpdateWidget(covariant SBUGroupChannelListScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.query != oldWidget.query) {
+      _resetCollection();
+    }
+  }
+
   void _init() async {
     final collectionProvider = SBUGroupChannelCollectionProvider();
     collectionNo = collectionProvider.add(query: widget.query);
@@ -112,6 +121,23 @@ class SBUGroupChannelListScreenState extends State<SBUGroupChannelListScreen>
     if (widget.onGroupChannelCollectionReady != null) {
       widget.onGroupChannelCollectionReady!(collectionNo);
     }
+
+    _loadMore();
+  }
+  
+  void _resetCollection() {
+    final collectionProvider = SBUGroupChannelCollectionProvider();
+    collectionProvider.remove(collectionNo);
+    collectionNo = collectionProvider.add(query: widget.query);
+
+    if (widget.onGroupChannelCollectionReady != null) {
+      widget.onGroupChannelCollectionReady!(collectionNo);
+    }
+
+    setState(() {
+      isLoading = true;
+      isError = false;
+    });
 
     _loadMore();
   }
