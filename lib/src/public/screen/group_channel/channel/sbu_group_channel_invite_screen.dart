@@ -20,9 +20,11 @@ import 'package:sendbird_uikit/src/internal/resource/sbu_text_styles.dart';
 /// SBUGroupChannelInviteScreen
 class SBUGroupChannelInviteScreen extends SBUStatefulComponent {
   final int messageCollectionNo;
+  final String? customType;
 
   const SBUGroupChannelInviteScreen({
     required this.messageCollectionNo,
+    this.customType,
     super.key,
   });
 
@@ -63,7 +65,9 @@ class SBUGroupChannelInviteScreenState
                       .any((member) => member.userId == user.userId) ==
                   false) {
                 isLoading = false;
-                userList.add(user);
+                if(user.userId.startsWith('${widget.customType}_')){
+                  userList.add(user);
+                }
               }
             }
           });

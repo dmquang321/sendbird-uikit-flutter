@@ -18,6 +18,17 @@ import 'package:sendbird_uikit/src/internal/resource/sbu_text_styles.dart';
 import 'package:sendbird_uikit/src/internal/utils/sbu_reaction_manager.dart';
 
 /// SBUGroupChannelListScreen
+
+class ChannelNotifier extends ValueNotifier<int> {
+  ChannelNotifier({int value = 0}) : super(value);
+
+  void reload([int? state]) {
+    value++;
+    notifyListeners();
+  }
+}
+
+/// SBUGroupChannelListScreen
 class SBUGroupChannelListScreen extends SBUStatefulComponent {
   static const double defaultScrollExtentToTriggerPreloading = 2000; // Check
   static const double defaultCacheExtent = 2000; // Check
@@ -29,6 +40,7 @@ class SBUGroupChannelListScreen extends SBUStatefulComponent {
   final void Function(GroupChannel)? onListItemClicked;
   final double scrollExtentToTriggerPreloading;
   final double cacheExtent;
+  final ChannelNotifier channelNotifier;
 
   final Widget Function(
     BuildContext context,
@@ -80,6 +92,7 @@ class SBUGroupChannelListScreen extends SBUStatefulComponent {
     this.customLoadingBody,
     this.customEmptyBody,
     this.customErrorScreen,
+    required this.channelNotifier,
     super.key,
   });
 
@@ -90,6 +103,7 @@ class SBUGroupChannelListScreen extends SBUStatefulComponent {
 class SBUGroupChannelListScreenState extends State<SBUGroupChannelListScreen>
     with AutomaticKeepAliveClientMixin {
   final scrollController = ScrollController();
+  late ChannelNotifier channelNotifier;
 
   late int collectionNo;
   bool isLoading = true;
@@ -102,6 +116,16 @@ class SBUGroupChannelListScreenState extends State<SBUGroupChannelListScreen>
   void initState() {
     super.initState();
     FToast().init(context); // Check
+    channelNotifier = widget.channelNotifier;
+    channelNotifier.addListener(_onChangeValue);
+    _init();
+  }
+
+  void _onChangeValue() {
+    setState(() {
+      isLoading = true;
+      isError = false;
+    });
     _init();
   }
 
@@ -153,9 +177,11 @@ class SBUGroupChannelListScreenState extends State<SBUGroupChannelListScreen>
               });
             } else {
               if (collection.channelList.isNotEmpty) {
-                if (scrollController.position.maxScrollExtent == 0) {
-                  await _loadMore();
-                }
+                WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+                  if (scrollController.position.maxScrollExtent == 0) {
+                    await _loadMore();
+                  }
+                });
               }
             }
           }
@@ -167,11 +193,14 @@ class SBUGroupChannelListScreenState extends State<SBUGroupChannelListScreen>
           isError = true;
         });
       }
+    } finally {
+      setState(() {});
     }
   }
 
   @override
   void dispose() {
+    channelNotifier.dispose();
     SBUGroupChannelCollectionProvider().remove(collectionNo);
     scrollController.dispose();
     super.dispose();
