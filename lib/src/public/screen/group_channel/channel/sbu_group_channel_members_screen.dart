@@ -18,11 +18,13 @@ import 'package:sendbird_uikit/src/internal/resource/sbu_text_styles.dart';
 /// SBUGroupChannelMembersScreen
 class SBUGroupChannelMembersScreen extends SBUStatefulComponent {
   final int messageCollectionNo;
+  final bool? canInvite;
   final void Function(GroupChannel)? onInviteButtonClicked;
 
   const SBUGroupChannelMembersScreen({
     required this.messageCollectionNo,
     this.onInviteButtonClicked,
+    this.canInvite = true,
     super.key,
   });
 
@@ -61,20 +63,23 @@ class SBUGroupChannelMembersScreenState
         textColorType: SBUTextColorType.text01,
       ),
       hasBackKey: true,
-      iconButton: SBUIconButtonComponent(
-        iconButtonSize: 32,
-        icon: SBUIconComponent(
-          iconSize: 24,
-          iconData: SBUIcons.plus,
-          iconColor:
-              isLightTheme ? SBUColors.primaryMain : SBUColors.primaryLight,
-        ),
-        onButtonClicked: () {
-          if (channel != null && widget.onInviteButtonClicked != null) {
-            widget.onInviteButtonClicked!(channel);
-          }
-        },
-      ),
+      iconButton: widget.canInvite ?? false
+          ? SBUIconButtonComponent(
+              iconButtonSize: 32,
+              icon: SBUIconComponent(
+                iconSize: 24,
+                iconData: SBUIcons.plus,
+                iconColor: isLightTheme
+                    ? SBUColors.primaryMain
+                    : SBUColors.primaryLight,
+              ),
+              onButtonClicked: () {
+                if (channel != null && widget.onInviteButtonClicked != null) {
+                  widget.onInviteButtonClicked!(channel);
+                }
+              },
+            )
+          : null,
     );
 
     final sortedMembers =
