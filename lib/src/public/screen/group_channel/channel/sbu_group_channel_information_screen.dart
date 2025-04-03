@@ -385,6 +385,8 @@ class SBUGroupChannelInformationScreenState
                                 }, (error, stack) {
                                   // TODO: Check error
                                 });
+                                Navigator.pop(context);
+                                Navigator.pop(context);
                               },
                               child: Padding(
                                 padding: const EdgeInsets.only(
