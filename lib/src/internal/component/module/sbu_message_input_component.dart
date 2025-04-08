@@ -37,7 +37,6 @@ class SBUNotifyParams {
     return SBUNotifyParams(
       channelName: json['channelName'],
       channelUrl: json['channelUrl'],
-      senderName: json['senderName'],
       message: json['message'],
       members: json['members'].cast<String>(),
     );
@@ -47,7 +46,6 @@ class SBUNotifyParams {
     return {
       'channelName': channelName,
       'channelUrl': channelUrl,
-      'senderName': senderName,
       'message': message,
       'members': members,
     };
