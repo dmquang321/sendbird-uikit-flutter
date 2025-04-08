@@ -395,17 +395,17 @@ class SBUMessageInputComponentState extends State<SBUMessageInputComponent> {
                         focusNode: textFieldFocusNode,
                         onChanged: (text) {
                           if (editingMessage == null) {
-                            if (showSendButton != text.isNotEmpty) {
+                            if (showSendButton != text.trim().isNotEmpty) {
                               if (mounted) {
                                 setState(() {
-                                  showSendButton = text.isNotEmpty;
+                                  showSendButton = text.trim().isNotEmpty;
                                 });
                               }
                             }
                           }
 
                           runZonedGuarded(() {
-                            if (text.isNotEmpty) {
+                            if (text.trim().isNotEmpty) {
                               channel.startTyping();
                             } else {
                               channel.endTyping();
@@ -440,7 +440,7 @@ class SBUMessageInputComponentState extends State<SBUMessageInputComponent> {
 
                             channel.sendUserMessage(
                               UserMessageCreateParams(
-                                message: textEditingController.text,
+                                message: textEditingController.text.trim(),
                                 replyToChannel: (replyingToMessage != null),
                                 parentMessageId: replyingToMessage?.messageId,
                               ),
