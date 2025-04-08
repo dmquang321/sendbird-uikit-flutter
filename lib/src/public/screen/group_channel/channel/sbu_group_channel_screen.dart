@@ -20,6 +20,40 @@ import 'package:sendbird_uikit/src/internal/component/module/sbu_message_list_it
 import 'package:sendbird_uikit/src/internal/provider/sbu_message_collection_provider.dart';
 import 'package:sendbird_uikit/src/internal/resource/sbu_text_styles.dart';
 
+class SBUNotifyParams {
+  String? channelName;
+  String? channelUrl;
+  String? senderName;
+  String? message;
+  List<int>? members;
+
+  SBUNotifyParams({
+    this.channelName,
+    this.channelUrl,
+    this.senderName,
+    this.message,
+    this.members,
+  });
+
+  factory SBUNotifyParams.fromJson(Map<String, dynamic> json) {
+    return SBUNotifyParams(
+      channelName: json['channelName'],
+      channelUrl: json['channelUrl'],
+      message: json['message'],
+      members: json['members'].cast<String>(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'channelName': channelName,
+      'channelUrl': channelUrl,
+      'message': message,
+      'members': members,
+    };
+  }
+}
+
 /// SBUGroupChannelScreen
 class SBUGroupChannelScreen extends SBUStatefulComponent {
   static const double defaultScrollExtentToTriggerPreloading = 4000; // Check
