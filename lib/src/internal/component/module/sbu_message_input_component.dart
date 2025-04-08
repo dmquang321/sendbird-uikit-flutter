@@ -551,7 +551,7 @@ class SBUMessageInputComponentState extends State<SBUMessageInputComponent> {
       (e) => e.userId == SendbirdChat.currentUser?.userId,
     );
 
-    final listTeamMember = channel.members;
+    final listTeamMember = [...channel.members];
     listTeamMember.remove(currentUser);
 
     widget.onSent!(

@@ -82,11 +82,11 @@ class SBUHeaderComponentState extends State<SBUHeaderComponent> {
                   children: [
                     if (hasBackKey)
                       Padding(
-                        padding: const EdgeInsets.only(left: 12),
+                        padding: const EdgeInsets.only(left: 8),
                         child: SBUIconButtonComponent(
                           iconButtonSize: 32,
                           icon: SBUIconComponent(
-                            iconSize: 24,
+                            iconSize: 22,
                             iconData: SBUIcons.arrowLeft,
                             iconColor: isLightTheme
                                 ? SBUColors.primaryMain
@@ -99,13 +99,12 @@ class SBUHeaderComponentState extends State<SBUHeaderComponent> {
                       ),
                     if (avatar != null)
                       Padding(
-                        padding: const EdgeInsets.only(left: 8, right: 8),
+                        padding: const EdgeInsets.only(right: 8),
                         child: avatar,
                       ),
                     Expanded(
                       child: Padding(
-                        padding:
-                            EdgeInsets.only(left: (avatar != null ? 0 : 24)),
+                        padding: EdgeInsets.only(left: hasBackKey ? 0 : 16),
                         child: (typingStatus != null && typingStatus.isNotEmpty)
                             ? Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
