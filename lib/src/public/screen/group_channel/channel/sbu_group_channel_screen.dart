@@ -25,6 +25,7 @@ class SBUNotifyParams {
   String? channelUrl;
   String? senderName;
   String? message;
+  int? teamId;
   List<int>? members;
 
   SBUNotifyParams({
@@ -32,23 +33,16 @@ class SBUNotifyParams {
     this.channelUrl,
     this.senderName,
     this.message,
+    this.teamId,
     this.members,
   });
-
-  factory SBUNotifyParams.fromJson(Map<String, dynamic> json) {
-    return SBUNotifyParams(
-      channelName: json['channelName'],
-      channelUrl: json['channelUrl'],
-      message: json['message'],
-      members: json['members'].cast<String>(),
-    );
-  }
 
   Map<String, dynamic> toJson() {
     return {
       'channelName': channelName,
       'channelUrl': channelUrl,
       'message': message,
+      'teamId': teamId,
       'userIds': members,
     };
   }

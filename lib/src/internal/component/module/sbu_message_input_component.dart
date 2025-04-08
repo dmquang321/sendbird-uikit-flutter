@@ -560,6 +560,7 @@ class SBUMessageInputComponentState extends State<SBUMessageInputComponent> {
         channelUrl: channel.channelUrl,
         senderName: currentUser?.nickname,
         message: messsage,
+        teamId: int.tryParse(channel.customType),
         members: listTeamMember
             .map((e) => int.tryParse(e.userId.split('_').last) ?? 0)
             .toList(),
