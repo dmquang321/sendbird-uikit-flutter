@@ -35,6 +35,8 @@ class SBUGroupChannelScreen extends SBUStatefulComponent {
   final void Function(GroupChannel, BaseMessage)? onListItemClicked;
   final double scrollExtentToTriggerPreloading;
   final double cacheExtent;
+  final void Function(SBUNotifyParams)? onSent;
+  final String? teamName;
 
   final Widget Function(
     BuildContext context,
@@ -105,6 +107,8 @@ class SBUGroupChannelScreen extends SBUStatefulComponent {
     this.customEmptyBody,
     this.customErrorScreen,
     this.customFrozenChannel,
+    this.onSent,
+    this.teamName,
     super.key,
   });
 
@@ -490,6 +494,17 @@ class SBUGroupChannelScreenState extends State<SBUGroupChannelScreen>
             messageCollectionNo: collectionNo!,
             backgroundColor:
                 isLightTheme ? SBUColors.background50 : SBUColors.background600,
+            onSent: (v) {
+              final channel = v;
+              if (v.channelName?.isNotEmpty ?? false) {
+                channel.channelName = '${widget.teamName} (${v.channelName})';
+                channel.message = '${v.senderName}: ${v.message}';
+              } else {
+                channel.channelName = '${widget.teamName} (${v.senderName})';
+              }
+
+              widget.onSent!(channel);
+            },
           )
         : null;
 

@@ -2,6 +2,7 @@
 
 import 'dart:async';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,13 +18,51 @@ import 'package:sendbird_uikit/src/internal/component/basic/sbu_text_component.d
 import 'package:sendbird_uikit/src/internal/provider/sbu_message_collection_provider.dart';
 import 'package:sendbird_uikit/src/internal/resource/sbu_text_styles.dart';
 
+class SBUNotifyParams {
+  String? channelName;
+  String? channelUrl;
+  String? senderName;
+  String? message;
+  List<int>? members;
+
+  SBUNotifyParams({
+    this.channelName,
+    this.channelUrl,
+    this.senderName,
+    this.message,
+    this.members,
+  });
+
+  factory SBUNotifyParams.fromJson(Map<String, dynamic> json) {
+    return SBUNotifyParams(
+      channelName: json['channelName'],
+      channelUrl: json['channelUrl'],
+      senderName: json['senderName'],
+      message: json['message'],
+      members: json['members'].cast<String>(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'channelName': channelName,
+      'channelUrl': channelUrl,
+      'senderName': senderName,
+      'message': message,
+      'members': members,
+    };
+  }
+}
+
 class SBUMessageInputComponent extends SBUStatefulComponent {
   final int messageCollectionNo;
   final Color backgroundColor;
+  final void Function(SBUNotifyParams)? onSent;
 
   const SBUMessageInputComponent({
     required this.messageCollectionNo,
     required this.backgroundColor,
+    this.onSent,
     super.key,
   });
 
@@ -303,6 +342,11 @@ class SBUMessageInputComponentState extends State<SBUMessageInputComponent> {
                                                                 .getThumbnailSize()
                                                           ],
                                                       );
+
+                                                      handleOnSent(
+                                                        channel,
+                                                        'Sent an attachment',
+                                                      );
                                                     }
                                                   }
                                                 } catch (e) {
@@ -441,6 +485,10 @@ class SBUMessageInputComponentState extends State<SBUMessageInputComponent> {
                               },
                             );
 
+                            handleOnSent(
+                              channel,
+                              textEditingController.text,
+                            );
                             textEditingController.clear();
                             SBUMessageCollectionProvider()
                                 .resetMessageInputMode(
@@ -532,5 +580,26 @@ class SBUMessageInputComponentState extends State<SBUMessageInputComponent> {
     );
 
     return sender;
+  }
+
+  void handleOnSent(GroupChannel channel, String messsage) {
+    final currentUser = channel.members.firstWhereOrNull(
+      (e) => e.userId == SendbirdChat.currentUser?.userId,
+    );
+
+    final listTeamMember = channel.members;
+    listTeamMember.remove(currentUser);
+
+    widget.onSent!(
+      SBUNotifyParams(
+        channelName: channel.name,
+        channelUrl: channel.channelUrl,
+        senderName: currentUser?.nickname,
+        message: messsage,
+        members: listTeamMember
+            .map((e) => int.tryParse(e.userId.split('_').last) ?? 0)
+            .toList(),
+      ),
+    );
   }
 }
