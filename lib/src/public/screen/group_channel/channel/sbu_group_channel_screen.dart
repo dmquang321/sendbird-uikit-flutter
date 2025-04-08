@@ -49,7 +49,7 @@ class SBUNotifyParams {
       'channelName': channelName,
       'channelUrl': channelUrl,
       'message': message,
-      'members': members,
+      'userIds': members,
     };
   }
 }
