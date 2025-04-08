@@ -56,7 +56,7 @@ class SBUGroupChannelCreateScreenState
             for (final user in users) {
               if (user.userId != SendbirdChat.currentUser!.userId) {
                 isLoading = false;
-                if(user.userId.startsWith('${widget.customType}_')){
+                if (user.userId.startsWith('${widget.customType}_')) {
                   userList.add(user);
                 }
               }
@@ -115,13 +115,17 @@ class SBUGroupChannelCreateScreenState
         onButtonClicked: selectedUserIdList.isNotEmpty
             ? () async {
                 if (SendbirdChat.currentUser != null) {
+                  final List<String> result = selectedUserIdList.map((id) {
+                    return userList.firstWhere((e) => e.userId == id).nickname;
+                  }).toList();
+
                   GroupChannel.createChannel(
                     GroupChannelCreateParams()
-                          ..userIds = selectedUserIdList
-                          ..operatorUserIds = [SendbirdChat.currentUser!.userId]
-                          ..name = ''
-                          ..isDistinct = false
-                          ..customType = widget.customType,
+                      ..userIds = selectedUserIdList
+                      ..operatorUserIds = [SendbirdChat.currentUser!.userId]
+                      ..name = '# ${result.join(', ')}'
+                      ..isDistinct = false
+                      ..customType = widget.customType,
                   ).then((channel) {
                     Navigator.pop(context);
                     if (widget.onChannelCreated != null) {
