@@ -544,6 +544,7 @@ class SBUMessageListItemComponentState
     required bool isLightTheme,
     required SBUStrings strings,
   }) {
+    final bool isGroupChat = (collection.channel.name.contains('# '));
     return Row(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -554,28 +555,34 @@ class SBUMessageListItemComponentState
           child: (isSameMinuteAtNextMessage == false)
               ? Material(
                   color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () async {
-                      if (message.sender != null) {
-                        widget.unfocus();
-                        await showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(8),
-                              topRight: Radius.circular(8),
-                            ),
-                          ),
-                          builder: (context) {
-                            return SBUBottomSheetUserComponent(
-                              user: message.sender!,
-                              on1On1ChannelCreated: widget.on1On1ChannelCreated,
-                            );
-                          },
-                        );
-                      }
-                    },
+                  child: GestureDetector(
+                    onTap: isGroupChat
+                        ? () async {
+                            if (message.sender != null) {
+                              widget.unfocus();
+                              await showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                backgroundColor: isLightTheme
+                                    ? SBUColors.background50
+                                    : SBUColors.background500,
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(8),
+                                    topRight: Radius.circular(8),
+                                  ),
+                                ),
+                                builder: (context) {
+                                  return SBUBottomSheetUserComponent(
+                                    user: message.sender!,
+                                    on1On1ChannelCreated:
+                                        widget.on1On1ChannelCreated,
+                                  );
+                                },
+                              );
+                            }
+                          }
+                        : null,
                     child: widget.getAvatarComponent(
                       isLightTheme: isLightTheme,
                       size: 26,
@@ -603,7 +610,7 @@ class SBUMessageListItemComponentState
                   ),
               Material(
                 color: Colors.transparent,
-                child: InkWell(
+                child: GestureDetector(
                   onTap: () async {
                     if (widget.onListItemClicked != null) {
                       widget.onListItemClicked!(collection.channel, message);
@@ -614,6 +621,9 @@ class SBUMessageListItemComponentState
                     await showModalBottomSheet(
                       context: context,
                       isScrollControlled: true,
+                      backgroundColor: isLightTheme
+                          ? SBUColors.background50
+                          : SBUColors.background500,
                       shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(8),
@@ -790,7 +800,7 @@ class SBUMessageListItemComponentState
         Flexible(
           child: Material(
             color: Colors.transparent,
-            child: InkWell(
+            child: GestureDetector(
               onTap: () async {
                 if (widget.onListItemClicked != null) {
                   widget.onListItemClicked!(collection.channel, message);
@@ -802,6 +812,9 @@ class SBUMessageListItemComponentState
                   await showModalBottomSheet(
                     context: context,
                     isScrollControlled: true,
+                    backgroundColor: isLightTheme
+                        ? SBUColors.background50
+                        : SBUColors.background500,
                     shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(8),
@@ -887,6 +900,9 @@ class SBUMessageListItemComponentState
                   await showModalBottomSheet(
                     context: context,
                     isScrollControlled: true,
+                    backgroundColor: isLightTheme
+                        ? SBUColors.background50
+                        : SBUColors.background500,
                     shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(8),
@@ -1001,6 +1017,8 @@ class SBUMessageListItemComponentState
     final fileWidget = _fileWidget(
         message: message, isLightTheme: isLightTheme, isMyMessage: false);
 
+    final bool isGroupChat = (collection.channel.name.contains('# '));
+
     return Row(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -1011,28 +1029,34 @@ class SBUMessageListItemComponentState
           child: (isSameMinuteAtNextMessage == false)
               ? Material(
                   color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () async {
-                      if (message.sender != null) {
-                        widget.unfocus();
-                        await showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(8),
-                              topRight: Radius.circular(8),
-                            ),
-                          ),
-                          builder: (context) {
-                            return SBUBottomSheetUserComponent(
-                              user: message.sender!,
-                              on1On1ChannelCreated: widget.on1On1ChannelCreated,
-                            );
-                          },
-                        );
-                      }
-                    },
+                  child: GestureDetector(
+                    onTap: isGroupChat
+                        ? () async {
+                            if (message.sender != null) {
+                              widget.unfocus();
+                              await showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                backgroundColor: isLightTheme
+                                    ? SBUColors.background50
+                                    : SBUColors.background500,
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(8),
+                                    topRight: Radius.circular(8),
+                                  ),
+                                ),
+                                builder: (context) {
+                                  return SBUBottomSheetUserComponent(
+                                    user: message.sender!,
+                                    on1On1ChannelCreated:
+                                        widget.on1On1ChannelCreated,
+                                  );
+                                },
+                              );
+                            }
+                          }
+                        : null,
                     child: widget.getAvatarComponent(
                       isLightTheme: isLightTheme,
                       size: 26,
@@ -1060,7 +1084,7 @@ class SBUMessageListItemComponentState
                   ),
               Material(
                 color: Colors.transparent,
-                child: InkWell(
+                child: GestureDetector(
                   onTap: () async {
                     if (widget.onListItemClicked != null) {
                       widget.onListItemClicked!(collection.channel, message);
@@ -1075,6 +1099,9 @@ class SBUMessageListItemComponentState
                     await showModalBottomSheet(
                       context: context,
                       isScrollControlled: true,
+                      backgroundColor: isLightTheme
+                          ? SBUColors.background50
+                          : SBUColors.background500,
                       shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(8),
@@ -1258,7 +1285,7 @@ class SBUMessageListItemComponentState
         Flexible(
           child: Material(
             color: Colors.transparent,
-            child: InkWell(
+            child: GestureDetector(
               onTap: () async {
                 if (widget.onListItemClicked != null) {
                   widget.onListItemClicked!(collection.channel, message);
@@ -1274,6 +1301,9 @@ class SBUMessageListItemComponentState
                   await showModalBottomSheet(
                     context: context,
                     isScrollControlled: true,
+                    backgroundColor: isLightTheme
+                        ? SBUColors.background50
+                        : SBUColors.background500,
                     shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(8),
@@ -1369,6 +1399,9 @@ class SBUMessageListItemComponentState
                   await showModalBottomSheet(
                     context: context,
                     isScrollControlled: true,
+                    backgroundColor: isLightTheme
+                        ? SBUColors.background50
+                        : SBUColors.background500,
                     shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(8),
@@ -1503,7 +1536,7 @@ class SBUMessageListItemComponentState
     if (message is UserMessage) {
       final parentUserMessageWidget = Material(
         color: Colors.transparent,
-        child: InkWell(
+        child: GestureDetector(
           onTap: () {
             _moveToParentMessage(message);
           },
@@ -1544,7 +1577,7 @@ class SBUMessageListItemComponentState
 
       final parentFileMessageWidget = Material(
         color: Colors.transparent,
-        child: InkWell(
+        child: GestureDetector(
           onTap: () {
             _moveToParentMessage(message);
           },

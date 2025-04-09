@@ -215,6 +215,9 @@ class SBUMessageInputComponentState extends State<SBUMessageInputComponent> {
                                       await showModalBottomSheet(
                                         context: context,
                                         isScrollControlled: true,
+                                        backgroundColor: isLightTheme
+                                            ? SBUColors.background50
+                                            : SBUColors.background500,
                                         shape: const RoundedRectangleBorder(
                                           borderRadius: BorderRadius.only(
                                             topLeft: Radius.circular(8),

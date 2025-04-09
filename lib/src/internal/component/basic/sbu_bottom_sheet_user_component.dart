@@ -74,17 +74,31 @@ class SBUBottomSheetUserComponentState
                     textColorType: SBUTextColorType.text01,
                   ),
                   onButtonClicked: () async {
-                    GroupChannel.createChannel(
-                      GroupChannelCreateParams()
-                        ..userIds = [user.userId]
-                        ..operatorUserIds = [SendbirdChat.currentUser!.userId]
-                        ..name = ''
-                        ..isDistinct = false,
-                    ).then((channel) {
+                    final query = GroupChannelListQuery()
+                      ..userIdsExactFilter = [
+                        user.userId,
+                        SendbirdChat.currentUser?.userId ?? '',
+                      ]
+                      ..customTypesFilter = [(user.userId.split('_').first)];
+                    final result = await query.next();
+                    if (result.isNotEmpty) {
                       Navigator.pop(context);
 
-                      on1On1ChannelCreated(channel);
-                    });
+                      on1On1ChannelCreated(
+                          GroupChannel(channelUrl: result.first.channelUrl));
+                    } else {
+                      GroupChannel.createChannel(
+                        GroupChannelCreateParams()
+                          ..userIds = [user.userId]
+                          ..operatorUserIds = [SendbirdChat.currentUser!.userId]
+                          ..name = ''
+                          ..isDistinct = false
+                          ..customType = (user.userId.split('_').first),
+                      ).then((channel) {
+                        Navigator.pop(context);
+                        on1On1ChannelCreated(channel);
+                      });
+                    }
                   },
                   padding: const EdgeInsets.all(8),
                   hasBorder: true,

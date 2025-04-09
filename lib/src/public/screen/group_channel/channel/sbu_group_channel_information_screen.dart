@@ -53,6 +53,8 @@ class SBUGroupChannelInformationScreenState
     bool isNotificationsOn = (channel != null &&
         channel.myPushTriggerOption != GroupChannelPushTriggerOption.off);
 
+    final bool isGroupChat = (channel != null && channel.name.contains('# '));
+
     final myMember = widget.getMyMember(channel);
     final amIOperator = myMember?.role == Role.operator;
 
@@ -67,89 +69,98 @@ class SBUGroupChannelInformationScreenState
         textColorType: SBUTextColorType.text01,
       ),
       hasBackKey: true,
-      textButton: SBUTextButtonComponent(
-        height: 32,
-        text: SBUTextComponent(
-          text: strings.edit,
-          textType: SBUTextType.button,
-          textColorType: SBUTextColorType.primary,
-        ),
-        onButtonClicked: () async {
-          await showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(8),
-                topRight: Radius.circular(8),
+      textButton: isGroupChat
+          ? SBUTextButtonComponent(
+              height: 32,
+              text: SBUTextComponent(
+                text: strings.edit,
+                textType: SBUTextType.button,
+                textColorType: SBUTextColorType.primary,
               ),
-            ),
-            builder: (context) {
-              return SBUBottomSheetMenuComponent(
-                buttonNames: [
-                  strings.changeChannelName,
-                  if (widget.canGetPhotoFile()) strings.changeChannelImage,
-                ],
-                onButtonClicked: (buttonName) async {
-                  if (buttonName == strings.changeChannelName) {
-                    await showDialog(
-                      context: context,
-                      barrierDismissible: true,
-                      builder: (context) => SBUDialogInputComponent(
-                        title: strings.changeChannelName,
-                        initialText: channel?.name,
-                        onCancelButtonClicked: () {
-                          // Cancel
-                        },
-                        onSaveButtonClicked: (enteredText) async {
-                          runZonedGuarded(() async {
-                            await channel?.updateChannel(
-                              GroupChannelUpdateParams()..name = enteredText,
-                            );
-                          }, (error, stack) {
-                            // TODO: Check error
-                          });
-                        },
-                      ),
-                    );
-                  } else if (buttonName == strings.changeChannelImage) {
-                    await showDialog(
-                      context: context,
-                      barrierDismissible: true,
-                      builder: (context) => SBUDialogMenuComponent(
-                        title: strings.changeChannelImage,
-                        buttonNames: [
-                          if (widget.canTakePhoto()) strings.takePhoto,
-                          if (widget.canChoosePhoto()) strings.choosePhoto,
-                        ],
-                        onButtonClicked: (buttonName) async {
-                          FileInfo? fileInfo;
-                          if (buttonName == strings.takePhoto) {
-                            fileInfo = await SendbirdUIKit().takePhoto!();
-                          } else if (buttonName == strings.choosePhoto) {
-                            fileInfo = await SendbirdUIKit().choosePhoto!();
-                          }
+              onButtonClicked: () async {
+                await showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: isLightTheme
+                      ? SBUColors.background50
+                      : SBUColors.background500,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(8),
+                      topRight: Radius.circular(8),
+                    ),
+                  ),
+                  builder: (context) {
+                    return SBUBottomSheetMenuComponent(
+                      buttonNames: [
+                        strings.changeChannelName,
+                        if (widget.canGetPhotoFile())
+                          strings.changeChannelImage,
+                      ],
+                      onButtonClicked: (buttonName) async {
+                        if (buttonName == strings.changeChannelName) {
+                          await showDialog(
+                            context: context,
+                            barrierDismissible: true,
+                            builder: (context) => SBUDialogInputComponent(
+                              title: strings.changeChannelName,
+                              initialText: channel?.name,
+                              onCancelButtonClicked: () {
+                                // Cancel
+                              },
+                              onSaveButtonClicked: (enteredText) async {
+                                runZonedGuarded(() async {
+                                  await channel?.updateChannel(
+                                    GroupChannelUpdateParams()
+                                      ..name = '# $enteredText',
+                                  );
+                                }, (error, stack) {
+                                  // TODO: Check error
+                                });
+                              },
+                            ),
+                          );
+                        } else if (buttonName == strings.changeChannelImage) {
+                          await showDialog(
+                            context: context,
+                            barrierDismissible: true,
+                            builder: (context) => SBUDialogMenuComponent(
+                              title: strings.changeChannelImage,
+                              buttonNames: [
+                                if (widget.canTakePhoto()) strings.takePhoto,
+                                if (widget.canChoosePhoto())
+                                  strings.choosePhoto,
+                              ],
+                              onButtonClicked: (buttonName) async {
+                                FileInfo? fileInfo;
+                                if (buttonName == strings.takePhoto) {
+                                  fileInfo = await SendbirdUIKit().takePhoto!();
+                                } else if (buttonName == strings.choosePhoto) {
+                                  fileInfo =
+                                      await SendbirdUIKit().choosePhoto!();
+                                }
 
-                          if (fileInfo != null && channel != null) {
-                            runZonedGuarded(() async {
-                              await channel.updateChannel(
-                                  GroupChannelUpdateParams()
-                                    ..coverImage = fileInfo);
-                            }, (error, stack) {
-                              // TODO: Check error
-                            });
-                          }
-                        },
-                      ),
+                                if (fileInfo != null && channel != null) {
+                                  runZonedGuarded(() async {
+                                    await channel.updateChannel(
+                                        GroupChannelUpdateParams()
+                                          ..coverImage = fileInfo);
+                                  }, (error, stack) {
+                                    // TODO: Check error
+                                  });
+                                }
+                              },
+                            ),
+                          );
+                        }
+                      },
                     );
-                  }
-                },
-              );
-            },
-          );
-        },
-        padding: const EdgeInsets.all(8),
-      ),
+                  },
+                );
+              },
+              padding: const EdgeInsets.all(8),
+            )
+          : null,
     );
 
     final notificationsSwitch = Switch(
@@ -211,7 +222,8 @@ class SBUGroupChannelInformationScreenState
                           ),
                           _line(isLightTheme),
                           if (amIOperator &&
-                              widget.onModerationsButtonClicked != null)
+                              widget.onModerationsButtonClicked != null &&
+                              isGroupChat)
                             Material(
                               color: Colors.transparent,
                               child: InkWell(
@@ -263,7 +275,8 @@ class SBUGroupChannelInformationScreenState
                               ),
                             ),
                           if (amIOperator &&
-                              widget.onModerationsButtonClicked != null)
+                              widget.onModerationsButtonClicked != null &&
+                              isGroupChat)
                             _line(isLightTheme),
                           if (!kIsWeb)
                             Material(
@@ -310,7 +323,8 @@ class SBUGroupChannelInformationScreenState
                               ),
                             ),
                           if (!kIsWeb) _line(isLightTheme),
-                          if (widget.onMembersButtonClicked != null)
+                          if (widget.onMembersButtonClicked != null &&
+                              isGroupChat)
                             Material(
                               color: Colors.transparent,
                               child: InkWell(
@@ -370,18 +384,27 @@ class SBUGroupChannelInformationScreenState
                                 ),
                               ),
                             ),
-                          if (widget.onMembersButtonClicked != null)
+                          if (widget.onMembersButtonClicked != null &&
+                              isGroupChat)
                             _line(isLightTheme),
                           Material(
                             color: Colors.transparent,
                             child: InkWell(
                               onTap: () async {
                                 runZonedGuarded(() {
-                                  channel.leave().then((value) {
-                                    if (widget.onChannelLeft != null) {
-                                      widget.onChannelLeft!(channel);
-                                    }
-                                  });
+                                  if (isGroupChat) {
+                                    channel.leave().then((value) {
+                                      if (widget.onChannelLeft != null) {
+                                        widget.onChannelLeft!(channel);
+                                      }
+                                    });
+                                  } else {
+                                    channel.deleteChannel().then((value) {
+                                      if (widget.onChannelLeft != null) {
+                                        widget.onChannelLeft!(channel);
+                                      }
+                                    });
+                                  }
                                 }, (error, stack) {
                                   // TODO: Check error
                                 });
@@ -397,7 +420,9 @@ class SBUGroupChannelInformationScreenState
                                       padding: const EdgeInsets.only(right: 16),
                                       child: SBUIconComponent(
                                         iconSize: 24,
-                                        iconData: SBUIcons.leave,
+                                        iconData: isGroupChat
+                                            ? SBUIcons.leave
+                                            : SBUIcons.delete,
                                         iconColor: isLightTheme
                                             ? SBUColors.errorMain
                                             : SBUColors.errorLight,
@@ -405,7 +430,9 @@ class SBUGroupChannelInformationScreenState
                                     ),
                                     Expanded(
                                       child: SBUTextComponent(
-                                        text: strings.leaveChannel,
+                                        text: isGroupChat
+                                            ? strings.leaveChannel
+                                            : 'Delete channel',
                                         textType: SBUTextType.subtitle2,
                                         textColorType: SBUTextColorType.text01,
                                       ),

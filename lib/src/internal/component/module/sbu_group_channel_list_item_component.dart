@@ -48,6 +48,8 @@ class SBUGroupChannelListItemComponentState
     final channel = widget.channel;
     final onListItemClicked = widget.onListItemClicked;
 
+    final bool isGroupChat = (channel.name.contains('# '));
+
     final avatar = widget.getGroupChannelAvatarComponent(
       isLightTheme: isLightTheme,
       size: 56,
@@ -188,7 +190,7 @@ class SBUGroupChannelListItemComponentState
             title: widget.getGroupChannelName(channel, strings),
             buttonNames: [
               if (!kIsWeb) isPushStatusString,
-              strings.leaveChannel,
+              isGroupChat ? strings.leaveChannel : 'Delete channel',
             ],
             onButtonClicked: (buttonName) async {
               if (buttonName == isPushStatusString) {
@@ -206,6 +208,12 @@ class SBUGroupChannelListItemComponentState
               } else if (buttonName == strings.leaveChannel) {
                 runZonedGuarded(() async {
                   await groupChannel.leave();
+                }, (error, stack) {
+                  // TODO: Check error
+                });
+              } else if (buttonName == 'Delete channel') {
+                runZonedGuarded(() async {
+                  await groupChannel.deleteChannel();
                 }, (error, stack) {
                   // TODO: Check error
                 });
