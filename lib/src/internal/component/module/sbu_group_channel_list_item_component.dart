@@ -22,9 +22,9 @@ class SBUGroupChannelListItemComponent extends SBUStatefulComponent {
   final double height;
   final GroupChannel channel;
   final void Function(GroupChannel)? onListItemClicked;
-  final void Function(bool)? onListItemToggleNotify;
-  final void Function()? onListItemLeft;
-  final void Function()? onListItemDeleted;
+  final void Function(GroupChannel, bool)? onListItemToggleNotify;
+  final void Function(GroupChannel)? onListItemLeft;
+  final void Function(GroupChannel)? onListItemDeleted;
 
   const SBUGroupChannelListItemComponent({
     required this.width,
@@ -209,7 +209,7 @@ class SBUGroupChannelListItemComponentState
                         GroupChannelPushTriggerOption.off);
                   }
                   if (widget.onListItemToggleNotify != null) {
-                    widget.onListItemToggleNotify!(isPushOff);
+                    widget.onListItemToggleNotify!(channel, isPushOff);
                   }
                 }, (error, stack) {
                   // TODO: Check error
@@ -225,7 +225,7 @@ class SBUGroupChannelListItemComponentState
                   // TODO: Check error
                 });
                 if (widget.onListItemLeft != null) {
-                  widget.onListItemLeft!();
+                  widget.onListItemLeft!(channel);
                 }
               } else if (buttonName == 'Delete channel') {
                 runZonedGuarded(() async {
@@ -234,7 +234,7 @@ class SBUGroupChannelListItemComponentState
                   // TODO: Check error
                 });
                 if (widget.onListItemDeleted != null) {
-                  widget.onListItemDeleted!();
+                  widget.onListItemDeleted!(channel);
                 }
               }
             },

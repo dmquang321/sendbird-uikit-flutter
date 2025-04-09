@@ -38,9 +38,9 @@ class SBUGroupChannelListScreen extends SBUStatefulComponent {
   final void Function(ScrollController)? onScrollControllerReady;
   final void Function()? onCreateButtonClicked;
   final void Function(GroupChannel)? onListItemClicked;
-  final void Function(bool)? onListItemToggleNotify;
-  final void Function()? onListItemLeft;
-  final void Function()? onListItemDeleted;
+  final void Function(GroupChannel, bool)? onListItemToggleNotify;
+  final void Function(GroupChannel)? onListItemLeft;
+  final void Function(GroupChannel)? onListItemDeleted;
   final double scrollExtentToTriggerPreloading;
   final double cacheExtent;
   final ChannelNotifier channelNotifier;
