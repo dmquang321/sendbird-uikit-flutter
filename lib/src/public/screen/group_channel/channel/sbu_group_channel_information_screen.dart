@@ -22,7 +22,7 @@ import 'package:sendbird_uikit/src/internal/resource/sbu_text_styles.dart';
 class SBUGroupChannelInformationScreen extends SBUStatefulComponent {
   final int messageCollectionNo;
   final void Function(GroupChannel)? onChannelLeft;
-  final void Function(bool)? onToggleNotify;
+  final void Function(GroupChannel?, bool)? onToggleNotify;
   final void Function(GroupChannel)? onModerationsButtonClicked;
   final void Function(GroupChannel)? onMembersButtonClicked;
 
@@ -183,7 +183,7 @@ class SBUGroupChannelInformationScreenState
         });
 
         if (widget.onToggleNotify != null) {
-          widget.onToggleNotify!(value);
+          widget.onToggleNotify!(channel, value);
         }
       },
       activeColor: SBUColors.primaryMain,

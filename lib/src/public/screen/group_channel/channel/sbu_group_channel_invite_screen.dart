@@ -21,10 +21,12 @@ import 'package:sendbird_uikit/src/internal/resource/sbu_text_styles.dart';
 class SBUGroupChannelInviteScreen extends SBUStatefulComponent {
   final int messageCollectionNo;
   final String? customType;
+  final void Function(GroupChannel?, List<int>)? onInvited;
 
   const SBUGroupChannelInviteScreen({
     required this.messageCollectionNo,
     this.customType,
+    this.onInvited,
     super.key,
   });
 
@@ -64,8 +66,7 @@ class SBUGroupChannelInviteScreenState
               if (channel.members
                       .any((member) => member.userId == user.userId) ==
                   false) {
-                isLoading = false;
-                if(user.userId.startsWith('${widget.customType}_')){
+                if (user.userId.startsWith('${widget.customType}_')) {
                   userList.add(user);
                 }
               }
@@ -80,6 +81,10 @@ class SBUGroupChannelInviteScreenState
                   _next(channel);
                 }
               }
+            } else if (userList.isEmpty && query.hasNext && !query.isLoading) {
+              _next(channel);
+            } else {
+              setState(() => isLoading = false);
             }
           });
         }
@@ -128,8 +133,15 @@ class SBUGroupChannelInviteScreenState
         ),
         onButtonClicked: selectedUserIdList.isNotEmpty
             ? () async {
+                final userIds = selectedUserIdList
+                    .map((e) => int.parse(e.split('_').last))
+                    .toList();
                 Navigator.pop(context);
                 await channel?.invite(selectedUserIdList);
+
+                if (widget.onInvited != null) {
+                  widget.onInvited!(channel, userIds);
+                }
               }
             : null,
         padding: const EdgeInsets.all(8),
@@ -191,7 +203,7 @@ class SBUGroupChannelInviteScreenState
                 : widget.getDefaultContainer(
                     isLightTheme,
                     child: isLoading
-                        ? Container()
+                        ? const Center(child: CircularProgressIndicator())
                         : SBUPlaceholderComponent(
                             isLightTheme: isLightTheme,
                             iconData: SBUIcons.members,

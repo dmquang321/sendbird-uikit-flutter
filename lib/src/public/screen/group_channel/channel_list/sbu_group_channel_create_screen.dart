@@ -55,7 +55,6 @@ class SBUGroupChannelCreateScreenState
           setState(() {
             for (final user in users) {
               if (user.userId != SendbirdChat.currentUser!.userId) {
-                isLoading = false;
                 if (user.userId.startsWith('${widget.customType}_')) {
                   userList.add(user);
                 }
@@ -71,6 +70,10 @@ class SBUGroupChannelCreateScreenState
                   _next();
                 }
               }
+            } else if (userList.isEmpty && query.hasNext && !query.isLoading) {
+              _next();
+            } else {
+              setState(() => isLoading = false);
             }
           });
         }
@@ -192,7 +195,7 @@ class SBUGroupChannelCreateScreenState
                 : widget.getDefaultContainer(
                     isLightTheme,
                     child: isLoading
-                        ? Container()
+                        ? const Center(child: CircularProgressIndicator())
                         : SBUPlaceholderComponent(
                             isLightTheme: isLightTheme,
                             iconData: SBUIcons.members,
