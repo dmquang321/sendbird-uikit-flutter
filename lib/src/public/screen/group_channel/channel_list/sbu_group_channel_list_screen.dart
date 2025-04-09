@@ -38,6 +38,9 @@ class SBUGroupChannelListScreen extends SBUStatefulComponent {
   final void Function(ScrollController)? onScrollControllerReady;
   final void Function()? onCreateButtonClicked;
   final void Function(GroupChannel)? onListItemClicked;
+  final void Function(bool)? onListItemToggleNotify;
+  final void Function()? onListItemLeft;
+  final void Function()? onListItemDeleted;
   final double scrollExtentToTriggerPreloading;
   final double cacheExtent;
   final ChannelNotifier channelNotifier;
@@ -84,6 +87,9 @@ class SBUGroupChannelListScreen extends SBUStatefulComponent {
     this.onScrollControllerReady,
     this.onCreateButtonClicked,
     this.onListItemClicked,
+    this.onListItemToggleNotify,
+    this.onListItemLeft,
+    this.onListItemDeleted,
     this.scrollExtentToTriggerPreloading =
         defaultScrollExtentToTriggerPreloading,
     this.cacheExtent = defaultCacheExtent,
@@ -303,6 +309,9 @@ class SBUGroupChannelListScreenState extends State<SBUGroupChannelListScreen>
                           height: 76,
                           channel: collection.channelList[index],
                           onListItemClicked: widget.onListItemClicked,
+                          onListItemDeleted: widget.onListItemDeleted,
+                          onListItemLeft: widget.onListItemLeft,
+                          onListItemToggleNotify: widget.onListItemToggleNotify,
                           key: Key(widget.getChannelCacheKey(
                                   collection.channelList[index]) ??
                               ''),

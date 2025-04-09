@@ -22,12 +22,18 @@ class SBUGroupChannelListItemComponent extends SBUStatefulComponent {
   final double height;
   final GroupChannel channel;
   final void Function(GroupChannel)? onListItemClicked;
+  final void Function(bool)? onListItemToggleNotify;
+  final void Function()? onListItemLeft;
+  final void Function()? onListItemDeleted;
 
   const SBUGroupChannelListItemComponent({
     required this.width,
     required this.height,
     required this.channel,
     this.onListItemClicked,
+    this.onListItemToggleNotify,
+    this.onListItemLeft,
+    this.onListItemDeleted,
     super.key,
   });
 
@@ -202,21 +208,34 @@ class SBUGroupChannelListItemComponentState
                     await groupChannel.setMyPushTriggerOption(
                         GroupChannelPushTriggerOption.off);
                   }
+                  if (widget.onListItemToggleNotify != null) {
+                    widget.onListItemToggleNotify!(isPushOff);
+                  }
                 }, (error, stack) {
                   // TODO: Check error
                 });
               } else if (buttonName == strings.leaveChannel) {
                 runZonedGuarded(() async {
-                  await groupChannel.leave();
+                  if (channel.memberCount < 2) {
+                    await groupChannel.deleteChannel();
+                  } else {
+                    await groupChannel.leave();
+                  }
                 }, (error, stack) {
                   // TODO: Check error
                 });
+                if (widget.onListItemLeft != null) {
+                  widget.onListItemLeft!();
+                }
               } else if (buttonName == 'Delete channel') {
                 runZonedGuarded(() async {
                   await groupChannel.deleteChannel();
                 }, (error, stack) {
                   // TODO: Check error
                 });
+                if (widget.onListItemDeleted != null) {
+                  widget.onListItemDeleted!();
+                }
               }
             },
           ),

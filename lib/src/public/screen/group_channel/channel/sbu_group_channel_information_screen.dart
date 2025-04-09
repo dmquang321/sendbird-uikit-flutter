@@ -22,12 +22,14 @@ import 'package:sendbird_uikit/src/internal/resource/sbu_text_styles.dart';
 class SBUGroupChannelInformationScreen extends SBUStatefulComponent {
   final int messageCollectionNo;
   final void Function(GroupChannel)? onChannelLeft;
+  final void Function(bool)? onToggleNotify;
   final void Function(GroupChannel)? onModerationsButtonClicked;
   final void Function(GroupChannel)? onMembersButtonClicked;
 
   const SBUGroupChannelInformationScreen({
     required this.messageCollectionNo,
     this.onChannelLeft,
+    this.onToggleNotify,
     this.onModerationsButtonClicked,
     this.onMembersButtonClicked,
     super.key,
@@ -112,7 +114,8 @@ class SBUGroupChannelInformationScreenState
                                 runZonedGuarded(() async {
                                   await channel?.updateChannel(
                                     GroupChannelUpdateParams()
-                                      ..name = '# $enteredText',
+                                      ..name =
+                                          '# ${enteredText.replaceAll('#', '').trim()}',
                                   );
                                 }, (error, stack) {
                                   // TODO: Check error
@@ -178,6 +181,10 @@ class SBUGroupChannelInformationScreenState
         }, (error, stack) {
           // TODO: Check error
         });
+
+        if (widget.onToggleNotify != null) {
+          widget.onToggleNotify!(value);
+        }
       },
       activeColor: SBUColors.primaryMain,
       activeTrackColor: SBUColors.primaryLight,
@@ -393,21 +400,21 @@ class SBUGroupChannelInformationScreenState
                               onTap: () async {
                                 runZonedGuarded(() {
                                   if (isGroupChat) {
-                                    channel.leave().then((value) {
-                                      if (widget.onChannelLeft != null) {
-                                        widget.onChannelLeft!(channel);
-                                      }
-                                    });
+                                    if (channel.memberCount < 2) {
+                                      channel.deleteChannel();
+                                    } else {
+                                      channel.leave();
+                                    }
                                   } else {
-                                    channel.deleteChannel().then((value) {
-                                      if (widget.onChannelLeft != null) {
-                                        widget.onChannelLeft!(channel);
-                                      }
-                                    });
+                                    channel.deleteChannel();
                                   }
                                 }, (error, stack) {
                                   // TODO: Check error
                                 });
+
+                                if (widget.onChannelLeft != null) {
+                                  widget.onChannelLeft!(channel);
+                                }
                                 Navigator.pop(context);
                                 Navigator.pop(context);
                               },
