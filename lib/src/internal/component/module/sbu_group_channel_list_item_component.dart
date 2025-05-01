@@ -2,6 +2,7 @@
 
 import 'dart:async';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -217,9 +218,29 @@ class SBUGroupChannelListItemComponentState
               } else if (buttonName == strings.leaveChannel) {
                 runZonedGuarded(() async {
                   if (channel.memberCount < 2) {
+                    // Muon xoa channel thi member cuoi phai duoc assign thanh operator
                     await groupChannel.deleteChannel();
                   } else {
-                    await groupChannel.leave();
+                    // Neu la operator thi assign quyen cho nguoi cuoi
+                    if (channel.myRole == Role.operator) {
+                      final listOperator = groupChannel.members
+                          .where((e) => e.role == Role.operator)
+                          .toList();
+
+                      // neu chi co 1 operator thi moi can addOperators
+                      if (listOperator.length > 1) {
+                        await groupChannel.leave();
+                      } else {
+                        final nextOperator = groupChannel.members
+                            .firstWhereOrNull((e) => e.role == Role.none);
+                        if (nextOperator != null) {
+                          await channel.addOperators([nextOperator.userId]);
+                        }
+                        await groupChannel.leave();
+                      }
+                    } else {
+                      await groupChannel.leave();
+                    }
                   }
                 }, (error, stack) {
                   // TODO: Check error
