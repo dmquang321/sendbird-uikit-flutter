@@ -39,6 +39,15 @@ class SBUGroupChannelCollectionProvider with ChangeNotifier {
     return _collectionMap[collectionNo];
   }
 
+  void resetProvider() {
+    _collectionMap.forEach((key, collection) {
+      collection.dispose();
+    });
+    _collectionMap.clear();
+    currentCollectionNo = 1;
+    notifyListeners();
+  }
+
   void _refresh() {
     notifyListeners();
   }
