@@ -26,6 +26,7 @@ class SBUNotifyParams {
   String? channelUrl;
   String? senderName;
   String? message;
+  String? url;
   int? teamId;
   List<int>? members;
   SendingStatus? sendingStatus;
@@ -36,6 +37,7 @@ class SBUNotifyParams {
     this.channelUrl,
     this.senderName,
     this.message,
+    this.url,
     this.teamId,
     this.members,
     this.sendingStatus,
