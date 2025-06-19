@@ -21,20 +21,24 @@ import 'package:sendbird_uikit/src/internal/provider/sbu_message_collection_prov
 import 'package:sendbird_uikit/src/internal/resource/sbu_text_styles.dart';
 
 class SBUNotifyParams {
+  int? messageId;
   String? channelName;
   String? channelUrl;
   String? senderName;
   String? message;
   int? teamId;
   List<int>? members;
+  SendingStatus? sendingStatus;
 
   SBUNotifyParams({
+    this.messageId,
     this.channelName,
     this.channelUrl,
     this.senderName,
     this.message,
     this.teamId,
     this.members,
+    this.sendingStatus,
   });
 
   Map<String, dynamic> toJson() {
