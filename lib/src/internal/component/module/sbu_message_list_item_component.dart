@@ -670,6 +670,9 @@ class SBUMessageListItemComponentState
                         isLightTheme: isLightTheme,
                         strings: strings,
                         isMyMessage: false,
+                        bgColor: isLightTheme
+                            ? SBUColors.background100
+                            : SBUColors.background400,
                       ) ??
                       Container(
                         padding: const EdgeInsets.only(top: 6),
@@ -941,6 +944,9 @@ class SBUMessageListItemComponentState
                         isLightTheme: isLightTheme,
                         strings: strings,
                         isMyMessage: true,
+                        bgColor: isLightTheme
+                            ? SBUColors.primaryMain
+                            : SBUColors.primaryLight,
                       ) ??
                       Container(
                         padding: const EdgeInsets.only(top: 7),
