@@ -38,6 +38,7 @@ class SBUOGTagManager {
     required bool isLightTheme,
     required SBUStrings strings,
     required bool isMyMessage,
+    required Color bgColor,
   }) {
     if (_isOGTagEnabled(message)) {
       const double messageItemWidth = 244;
@@ -50,11 +51,7 @@ class SBUOGTagManager {
         width: messageItemWidth,
         padding: const EdgeInsets.only(top: 6),
         decoration: BoxDecoration(
-          color: isMyMessage
-              ? (isLightTheme ? SBUColors.primaryMain : SBUColors.primaryLight)
-              : (isLightTheme
-                  ? SBUColors.background100
-                  : SBUColors.background400),
+          color: bgColor,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
